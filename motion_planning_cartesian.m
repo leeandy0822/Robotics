@@ -6,9 +6,9 @@ A(1:3,4) = A(1:3,4)/100;
 B(1:3,4) = B(1:3,4)/100;
 C(1:3,4) = C(1:3,4)/100;
 
-A_pos = [A(1,4) A(2,4) A(3,4) matrixtoangle(A(1:3,1:3))];
-B_pos = [B(1,4) B(2,4) B(3,4) matrixtoangle(B(1:3,1:3))];
-C_pos = [C(1,4) C(2,4) C(3,4) matrixtoangle(C(1:3,1:3))];
+A_pos = [A(1,4) A(2,4) A(3,4) rotm2eul(A(1:3,1:3))];
+B_pos = [B(1,4) B(2,4) B(3,4) rotm2eul(B(1:3,1:3))];
+C_pos = [C(1,4) C(2,4) C(3,4) rotm2eul(C(1:3,1:3))];
 
 
 delta_b = B_pos - A_pos;
@@ -59,13 +59,14 @@ joint_matrix = zeros(4,4);
 joint_angle = zeros(6,1/sampling_rate);
 
 for i = 1:length(pos)
-    joint_matrix(1:3,1:3) = angletomatrix(pos(4:6,i)); 
+    joint_matrix(1:3,1:3) = eul2rotm(pos(4:6,i)'); 
     joint_matrix(1:3,4) = pos(1:3,i);
     joint_angle(:,i) = inverse_kinematics(joint_matrix);
 end
 
-joint_vel = diff(joint_angle')';
-joint_acc = diff(joint_vel')';
+joint_angle(6,1) = 180;
+joint_vel = diff(joint_angle')'/sampling_rate;
+joint_acc = diff(joint_vel')'/sampling_rate;
 
 p(:,:) = pos(1:3,:);
 v(:,:) = vel(1:3,:);
@@ -140,10 +141,9 @@ hold on;
 plot3([C(1,4),B(1,4)], [C(2,4),B(2,4)], [C(3,4),B(3,4)], ':');
 
 % path
-for i = 1:15:length(pos)
-    matrix = angletomatrix([pos(4,i),pos(5,i),pos(6,i)]);
+for i = 1:2:length(pos)
+    matrix = eul2rotm([pos(4,i),pos(5,i),pos(6,i)]);
     quiver3(pos(1,i),pos(2,i),pos(3,i),matrix(1,1)/20,matrix(2,1)/20,matrix(3,1)/20,'r',"LineWidth",0.3); 
-    quiver3(pos(1,i),pos(2,i),pos(3,i),matrix(1,2)/20,matrix(2,2)/20,matrix(3,2)/20,'g',"LineWidth",0.3); 
     quiver3(pos(1,i),pos(2,i),pos(3,i),matrix(1,3)/20,matrix(2,3)/20,matrix(3,3)/20,'b',"LineWidth",0.3); 
 end
 

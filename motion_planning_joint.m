@@ -106,11 +106,9 @@ plot3([M_C(1,4),M_B(1,4)], [M_C(2,4),M_B(2,4)], [M_C(3,4),M_B(3,4)], ':');
 hold on;
 
 % path
-for i = 1:15:length(position)
+for i = 1:1:length(position)
 [P, ~] = forward_kinematics(angle(:,i)');
 quiver3(P(1,4),P(2,4),P(3,4),P(1,3)*5,P(2,3)*5,P(3,3)*5,'b',"LineWidth",0.3); hold on
-quiver3(P(1,4),P(2,4),P(3,4),P(1,2)*5,P(2,2)*5,P(3,2)*5,'g',"LineWidth",0.3); hold on
-quiver3(P(1,4),P(2,4),P(3,4),P(1,1)*5,P(2,1)*5,P(3,1)*5,'r',"LineWidth",0.3); hold on
 end
 
 
